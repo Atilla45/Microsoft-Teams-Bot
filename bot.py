@@ -14,10 +14,12 @@ from selenium.webdriver.common.action_chains import ActionChains
 import discord_webhook
 import sys
 import pytz
+from selenium.webdriver.chrome.options import Options
 
-
-
+CHROMEDRIVER_PATH='/usr/bin/chromedriver'
 opt = Options()
+opt.headless = True
+
 opt.add_argument("--disable-infobars")
 opt.add_argument("start-maximized")
 opt.add_argument("--disable-extensions")
@@ -29,9 +31,9 @@ opt.add_experimental_option("prefs", { \
     "profile.default_content_setting_values.geolocation": 1, 
     "profile.default_content_setting_values.notifications": 1 
   })
-
-driver = webdriver.Chrome(chrome_options=opt,service_log_path='NUL')
-driver.close()
+driver = webdriver.Chrome(CHROMEDRIVER_PATH, chrome_options=opt)
+# driver = webdriver.Chrome(chrome_options=opt,service_log_path='NUL')
+# driver.close()
 # driver = None
 URL = "https://teams.microsoft.com"
 
@@ -178,7 +180,7 @@ def joinclass(class_name,start_time,end_time):
 def start_browser():
 
 	global driver
-	driver = webdriver.Chrome(chrome_options=opt,service_log_path='NUL')
+	# driver = webdriver.Chrome(chrome_options=opt,service_log_path='NUL')
 
 	driver.get(URL)
 
@@ -263,11 +265,11 @@ def add_timetable():
 	#Start browser
 	start_browser()
 	while True:
-		print('isleyir')
+		print('waiting for schedule')
 		# Checks whether a scheduled task
 		# is pending to run or not
 		schedule.run_pending()
-		time.sleep(1)
+		time.sleep(10)
 	
 
 if __name__=="__main__":
@@ -276,7 +278,7 @@ if __name__=="__main__":
 		if(not(path.exists("timetable.db"))):
 			createDB()
 			print('database created,please try again')
-		if str(sys.argv):
+		if len(sys.argv)>1:
 			add_timetable()
 			
 		print('waiting for response')
